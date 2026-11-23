@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icona PROVISIONAL de Sobretaula (l'Oriol en farà la definitiva). Font única:
+       npm run icons en genera els PNG del manifest i d'Apple. -->
+  <defs>
+    <pattern id="vichy" width="44" height="44" patternUnits="userSpaceOnUse">
+      <rect width="44" height="44" fill="#FFFBF4"/>
+      <rect width="22" height="44" fill="#B23A2B" fill-opacity="0.5"/>
+      <rect width="44" height="22" fill="#B23A2B" fill-opacity="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#B23A2B"/>
+  <g transform="rotate(-12 225 255)">
+    <rect x="120" y="110" width="210" height="290" rx="28" fill="url(#vichy)" stroke="#FFFBF4" stroke-width="12"/>
+  </g>
+  <g transform="rotate(9 295 265)">
+    <rect x="190" y="120" width="210" height="290" rx="28" fill="#FFFBF4"/>
+    <circle cx="295" cy="265" r="62" fill="none" stroke="#B23A2B" stroke-width="14"/>
+    <circle cx="295" cy="265" r="34" fill="none" stroke="#D9A12B" stroke-width="8"/>
+    <circle cx="225" cy="155" r="10" fill="#B23A2B"/>
+    <circle cx="365" cy="375" r="10" fill="#B23A2B"/>
+  </g>
+</svg>

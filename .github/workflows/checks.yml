@@ -1,0 +1,43 @@
+# Comprovacions a cada PR i a cada push a main.
+# La suite RLS és el test més important del repo: prova que un grup no pot
+# llegir ni escriure res d'un altre, i que els vots són secrets fins a la
+# revelació.
+
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  static-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test:unit
+
+  rls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Supabase local (aplica totes les migracions + seed)
+        run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime
+      - name: Aïllament entre grups + secret del vot + guarda d'esquema
+        run: npm run test:rls
+      - name: Atura la Supabase
+        if: always()
+        run: npx supabase stop --no-backup

@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Sobretaula — tokens de disseny
+   Personalitat: càlida i juganera (una taula després de sopar).
+   Els components NOMÉS fan servir aquests tokens (bg-surface, text-heading…),
+   mai colors crus: així el mode fosc és gratis.
+   Tema: sistema per defecte; [data-theme] el força (script al <head>).
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* superfícies */
+  --canvas: #f7f0e3;        /* paper crema */
+  --surface: #fffbf4;       /* targetes, capçalera */
+  --surface-2: #f1e7d6;     /* farcits interiors */
+  --surface-3: #e8dbc5;     /* premut */
+  --card-face: #fffdf8;     /* anvers de les cartes */
+
+  /* vores */
+  --line-subtle: #eadfcb;
+  --line: #dccdb3;
+  --line-strong: #bfa987;
+
+  /* text, del més fosc al més suau */
+  --heading: #2b1a12;       /* fusta fosca */
+  --body: #3d2a1f;
+  --label: #5c4636;
+  --subtle: #6f5848;
+  --muted: #8f7a68;         /* només text gran i icones */
+
+  /* marca: vermell d'estovalla */
+  --primary: #b23a2b;
+  --primary-hover: #9c3024;
+  --primary-active: #862819;
+  --on-primary: #fffbf4;
+  --link: #a3352a;
+  --primary-soft: #f6ded6;
+  --primary-soft-fg: #8a2a1e;
+  --primary-edge: #e7b9ac;
+
+  /* accent: mostassa (com a molt un element ple per vista: top 3, nota final) */
+  --accent: #d9a12b;
+  --on-accent: #2b1a12;
+  --accent-soft: #f7e7c1;
+  --accent-soft-fg: #6e4e0b;
+
+  /* colors de grup (src/config/groupColors.ts) */
+  --group-tomaquet: #c8432f;
+  --group-taronja: #d9772b;
+  --group-mostassa: #c99a1e;
+  --group-oliva: #7a8a2e;
+  --group-salvia: #4f8a6e;
+  --group-blau: #3c6e9e;
+  --group-pruna: #7d4a7a;
+  --group-rosa: #c2567a;
+
+  --flag-edge: rgb(43 26 18 / 0.2);
+  --shadow-card: 0 1px 2px rgb(43 26 18 / 0.08), 0 4px 12px rgb(43 26 18 / 0.06);
+  --shadow-raised: 0 2px 4px rgb(43 26 18 / 0.1), 0 12px 28px rgb(43 26 18 / 0.14);
+}
+
+/* Fosc: marró vi molt fosc, no negre. Els valors es repeteixen al bloc
+   prefers-color-scheme (CSS no té mixins); test de contrast a tests/unit. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #1e1412;
+  --surface: #2a1c19;
+  --surface-2: #34241f;
+  --surface-3: #3f2c26;
+  --card-face: #f3e6d4;
+  --line-subtle: #3a2924;
+  --line: #4a362f;
+  --line-strong: #6b5045;
+  --heading: #f7ece0;
+  --body: #e8dacb;
+  --label: #cdb9a6;
+  --subtle: #b09a86;
+  --muted: #8e7a6a;
+  --primary: #c24a36;
+  --primary-hover: #d0573f;
+  --primary-active: #b03f2c;
+  --on-primary: #fffbf4;
+  --link: #f08a75;
+  --primary-soft: #4a231c;
+  --primary-soft-fg: #f5b4a5;
+  --primary-edge: #6e3227;
+  --accent: #e3b04a;
+  --on-accent: #2b1a12;
+  --accent-soft: #4a3812;
+  --accent-soft-fg: #f3d38a;
+  --group-tomaquet: #e06a55;
+  --group-taronja: #eb9450;
+  --group-mostassa: #e2b647;
+  --group-oliva: #a3b357;
+  --group-salvia: #78b396;
+  --group-blau: #6e9ccb;
+  --group-pruna: #b17dae;
+  --group-rosa: #e384a3;
+  --flag-edge: rgb(255 255 255 / 0.22);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
+  --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.45), 0 12px 28px rgb(0 0 0 / 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #1e1412;
+    --surface: #2a1c19;
+    --surface-2: #34241f;
+    --surface-3: #3f2c26;
+    --card-face: #f3e6d4;
+    --line-subtle: #3a2924;
+    --line: #4a362f;
+    --line-strong: #6b5045;
+    --heading: #f7ece0;
+    --body: #e8dacb;
+    --label: #cdb9a6;
+    --subtle: #b09a86;
+    --muted: #8e7a6a;
+    --primary: #c24a36;
+    --primary-hover: #d0573f;
+    --primary-active: #b03f2c;
+    --on-primary: #fffbf4;
+    --link: #f08a75;
+    --primary-soft: #4a231c;
+    --primary-soft-fg: #f5b4a5;
+    --primary-edge: #6e3227;
+    --accent: #e3b04a;
+    --on-accent: #2b1a12;
+    --accent-soft: #4a3812;
+    --accent-soft-fg: #f3d38a;
+    --group-tomaquet: #e06a55;
+    --group-taronja: #eb9450;
+    --group-mostassa: #e2b647;
+    --group-oliva: #a3b357;
+    --group-salvia: #78b396;
+    --group-blau: #6e9ccb;
+    --group-pruna: #b17dae;
+    --group-rosa: #e384a3;
+    --flag-edge: rgb(255 255 255 / 0.22);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
+    --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.45), 0 12px 28px rgb(0 0 0 / 0.4);
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-card-face: var(--card-face);
+  --color-line-subtle: var(--line-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-heading: var(--heading);
+  --color-body: var(--body);
+  --color-label: var(--label);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-on-primary: var(--on-primary);
+  --color-link: var(--link);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-fg: var(--primary-soft-fg);
+  --color-primary-edge: var(--primary-edge);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-fg: var(--accent-soft-fg);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+
+  --radius-card: 1rem;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-sans);
+}
+
+/* Xifres que s'alineen (notes, posicions, preus). */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fons de taula: unes estovalles de quadres molt suaus darrere de tot. */
+.tablecloth {
+  background-color: var(--canvas);
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--primary) 5%, transparent) 50%, transparent 50%),
+    linear-gradient(color-mix(in oklab, var(--primary) 5%, transparent) 50%, transparent 50%);
+  background-size: 28px 28px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
