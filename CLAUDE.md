@@ -131,7 +131,12 @@ Errors de les RPC: `raise exception '<codi>'` (p. ex. `not_allowed`,
 - Secrets: `SUPABASE_SECRET_KEY` i `CRON_SECRET` només al servidor (Vercel).
   Res de dades reals al repo.
 - Esborrar el compte (Fase 5): anonimitza el perfil i conserva els vots (si
-  no, l'historial dels grups canviaria).
+  no, l'historial dels grups canviaria). Fins aleshores, per correu (ho diu la
+  política de privacitat).
+- **La política de privacitat diu el que fa el codi.** Un proveïdor nou
+  (correu, analítica…), una dada nova o un canvi de qui veu què → canviar
+  `src/i18n/privacitat.ca.ts` i `LEGAL.privacyUpdatedOn` en el mateix canvi.
+  Google la demana per publicar el login.
 
 ## Puntuació — un sol lloc
 
@@ -188,7 +193,8 @@ Errors de les RPC: `raise exception '<codi>'` (p. ex. `not_allowed`,
 
 | Ruta | Pantalla |
 |---|---|
-| `/entrar` | Entrar amb Google (en local, també «entrar com a…» usuaris de prova) |
+| `/entrar` | Entrar amb Google (en local, també «entrar com a…» usuaris de prova). És la «pàgina principal» que declarem a Google |
+| `/privacitat` | Política de privacitat (pública). Text a `src/i18n/privacitat.ca.ts`, correu a `src/config/legal.ts` |
 | `/auth/callback` | Intercanvi del codi OAuth |
 | `/benvinguda` | Primer cop: nom i avatar. Sense grups: codi d'invitació, o crear grup si es pot |
 | `/unir/[codi]` | Invitació: veure el grup i acceptar |
@@ -267,7 +273,8 @@ npm run dev
 | 2026-11-23 | Cartes en 2 files de 5 | 10 en una fila fan ~30 px, sota el mínim tàctil | Una fila de 10 |
 | 2026-11-23 | Els vots sobreviuen a sortir del grup / esborrar el compte | La història del grup no ha de canviar | Esborrar en cascada |
 | 2026-11-23 | `cacheComponents` activat (defecte de Next 16) | Serà obligatori al proper major; conserva l'estat en tornar enrere | Desactivar-lo |
-| 2026-11-23 | Producció a `*.vercel.app`, només Google | No hi ha domini propi | Domini propi + codi per correu (quan n'hi hagi) |
+| 2026-11-23 | Producció a `sobretaula-app.vercel.app`, només Google | No hi ha domini propi; `sobretaula.vercel.app` ja és d'una altra persona | Domini propi + codi per correu (quan n'hi hagi) |
+| 2026-11-24 | Pàgina `/privacitat` pública i enllaçada des de `/entrar` | Google no deixa publicar el login sense pàgina principal i política de privacitat | Quedar-se en mode «Prueba» (cada convidat s'hauria d'afegir a mà a Google) |
 | 2026-11-23 | `<Flag>` i `cuisines.ts` avançats a la Fase 1 | L'inici del grup ja ensenya visites amb bandera | Esperar a la Fase 2 |
 | 2026-11-23 | Icona provisional (`public/icons/logo.svg`) | L'Oriol farà la definitiva; `npm run icons` regenera els PNG | — |
 

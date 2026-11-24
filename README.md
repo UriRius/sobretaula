@@ -93,7 +93,15 @@ Vercel → tornar a Supabase i Google amb l'adreça final → primer administrad
    - Support email: el teu.
    - Audience: **External**.
    - Contact email: el teu.
-3. **Audience → Publish app** (passa a *In production*).
+3. **Branding** («Información de la marca»): a més del nom i el correu, Google
+   exige per publicar:
+   - Página principal: `https://sobretaula-app.vercel.app/entrar`
+   - Política de privacidad: `https://sobretaula-app.vercel.app/privacitat`
+   - Dominios autorizados: `sobretaula-app.vercel.app`
+   - Información de contacto del desarrollador: el teu correu.
+   No pugis cap logo (obligaria a verificar l'app). Per això cal haver
+   desplegat a Vercel abans de publicar.
+   Després, **Audience → Publish app** (passa a *In production*).
    - Només fem servir els permisos bàsics (nom, email i foto), així que Google
      no demana cap verificació.
    - Si la deixes en *Testing*, només hi podran entrar els correus que
@@ -116,7 +124,7 @@ Vercel → tornar a Supabase i Google amb l'adreça final → primer administrad
 2. A [vercel.com](https://vercel.com) → **Add New → Project** → importa el
    repositori.
    - **Project Name: `sobretaula`**. El nom del projecte decideix l'adreça:
-     `sobretaula.vercel.app`.
+     `sobretaula-app.vercel.app`.
    - Si ja està agafat, Vercel en proposarà una altra. Després la pots canviar
      a **Settings → Domains → Edit** (qualsevol `*.vercel.app` lliure).
 3. **Environment Variables** (abans del primer deploy):

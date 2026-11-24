@@ -115,6 +115,11 @@ export const ca = {
     themeLight: 'Clar',
     themeDark: 'Fosc',
   },
+  legal: {
+    privacy: 'Privacitat',
+    updatedOn: (date: string) => `Actualitzada el ${date}`,
+    backToApp: '← Torna a Sobretaula',
+  },
   notFound: {
     title: 'Aquí no hi ha res',
     text: 'Potser l\'enllaç és antic, o és d\'un grup on no ets.',

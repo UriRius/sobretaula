@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Suspense } from 'react'
 import { devSignIn } from '@/app/actions/auth'
 import { Logo } from '@/components/Logo'
@@ -18,11 +19,16 @@ export default function SignInPage({ searchParams }: PageProps<'/entrar'>) {
           <Logo size={72} />
           <h1 className="mt-4 font-display text-3xl font-semibold text-heading">{ca.app.name}</h1>
           <p className="mt-1 text-subtle">{ca.app.tagline}</p>
+          <p className="mt-3 text-sm text-label">{ca.app.description}</p>
         </div>
         <Suspense fallback={<GoogleButton next="/" />}>
           <SignInForm searchParams={searchParams} />
         </Suspense>
       </div>
+      {/* Aquesta pantalla és la «pàgina principal» que veu Google: ha d'enllaçar la privacitat. */}
+      <Link href="/privacitat" className="mt-6 rounded-lg bg-surface/80 px-3 py-2 text-sm font-medium text-link underline-offset-4 hover:underline">
+        {ca.legal.privacy}
+      </Link>
     </main>
   )
 }

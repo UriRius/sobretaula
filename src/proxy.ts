@@ -4,7 +4,7 @@ import { ACTIVE_GROUP_COOKIE } from '@/lib/activeGroup'
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/supabase/env'
 
 // Rutes que no demanen sessió.
-const PUBLIC_PATHS = [/^\/entrar$/, /^\/auth\//, /^\/api\/keep-alive$/]
+const PUBLIC_PATHS = [/^\/entrar$/, /^\/privacitat$/, /^\/auth\//, /^\/api\/keep-alive$/]
 const GROUP_PATH = /^\/g\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/|$)/
 
 /**
