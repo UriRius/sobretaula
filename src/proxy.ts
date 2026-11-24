@@ -15,6 +15,15 @@ const GROUP_PATH = /^\/g\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a
  * Això és una comprovació optimista: la seguretat de debò és la RLS.
  */
 export async function proxy(request: NextRequest) {
+  // Si Supabase torna a la Site URL (`/?code=…`) en lloc de /auth/callback
+  // (passa quan l'adreça de tornada no encaixa amb cap «Redirect URL»),
+  // completem l'entrada igualment en lloc de deixar l'usuari a mig camí.
+  if (request.nextUrl.pathname === '/' && request.nextUrl.searchParams.has('code')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/callback'
+    return NextResponse.redirect(url)
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

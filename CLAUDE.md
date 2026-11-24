@@ -282,3 +282,4 @@ npm run dev
 
 | Data | Què va passar | Causa | Regla que en surt |
 |---|---|---|---|
+| 2026-11-24 | Primer login a producció: Google OK però l'usuari acabava a `/?code=…` d'un domini sense app (404) | Redirect URL exacta (`…/auth/callback`) no encaixa amb `…/auth/callback?next=…` → Supabase torna a la Site URL; i la Site URL no era el domini real de Vercel | Redirect URLs sempre amb comodí (`https://<domini>/**`); el proxy reenvia `/?code=` a `/auth/callback` |

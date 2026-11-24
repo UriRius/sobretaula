@@ -152,7 +152,7 @@ Vercel → tornar a Supabase i Google amb l'adreça final → primer administrad
 
 1. Supabase → **Authentication → URL Configuration**:
    - *Site URL*: `https://<nom>.vercel.app`
-   - *Redirect URLs*: afegeix `https://<nom>.vercel.app/auth/callback`
+   - *Redirect URLs*: afegeix `https://<nom>.vercel.app/**` (amb el comodí: l'app hi afegeix `?next=…` i una adreça exacta no encaixaria)
 2. Google → el teu client → *Authorized JavaScript origins*:
    `https://<nom>.vercel.app` (si no ho havies posat).
 
