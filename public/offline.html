@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ca">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sense connexió · Sobretaula</title>
+    <style>
+      /* Pàgina estàtica (la serveix el service worker sense xarxa): no pot
+         carregar el CSS de l'app. Els colors són una còpia dels tokens de
+         src/app/globals.css (clar i fosc) i els textos, de src/i18n/ca.ts
+         (offline). Si en canvies un, canvia l'altre. */
+      :root {
+        color-scheme: light dark;
+        --canvas: #f7f0e3;
+        --surface: #fffbf4;
+        --line: #dccdb3;
+        --heading: #2b1a12;
+        --subtle: #6f5848;
+        --primary: #b23a2b;
+        --on-primary: #fffbf4;
+        --check: color-mix(in oklab, #b23a2b 5%, transparent);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --canvas: #1e1412;
+          --surface: #2a1c19;
+          --line: #4a362f;
+          --heading: #f7ece0;
+          --subtle: #b09a86;
+          --primary: #c24a36;
+          --on-primary: #fffbf4;
+          --check: color-mix(in oklab, #c24a36 5%, transparent);
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--heading);
+        background-color: var(--canvas);
+        background-image:
+          linear-gradient(90deg, var(--check) 50%, transparent 50%),
+          linear-gradient(var(--check) 50%, transparent 50%);
+        background-size: 28px 28px;
+      }
+      main {
+        width: 100%;
+        max-width: 360px;
+        padding: 28px 24px;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      img { width: 64px; height: 64px; }
+      h1 { margin: 16px 0 8px; font-family: ui-serif, Georgia, serif; font-size: 28px; }
+      p { margin: 0 0 24px; color: var(--subtle); line-height: 1.5; }
+      button {
+        width: 100%;
+        height: 52px;
+        border: 0;
+        border-radius: 12px;
+        font: inherit;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--on-primary);
+        background: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/logo.svg" alt="" />
+      <h1>Sense connexió</h1>
+      <p>Sobretaula necessita internet per saber què voten els altres. Torna-ho a provar quan tinguis cobertura.</p>
+      <button type="button" onclick="location.reload()">Torna-ho a provar</button>
+    </main>
+  </body>
+</html>

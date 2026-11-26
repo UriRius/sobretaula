@@ -9,10 +9,10 @@ type Tab = { key: string; label: string; icon: LucideIcon; href: (groupId: strin
 
 // 4 destinacions, on arriba el polze.
 const TABS: Tab[] = [
-  { key: 'home', label: ca.nav.home, icon: Home, href: (g) => (g ? `/g/${g}` : '/'), match: /^\/g\/[^/]+\/?$|^\/$/ },
-  { key: 'ranking', label: ca.nav.ranking, icon: Trophy, href: (g) => (g ? `/g/${g}/ranquing` : '/'), match: /^\/g\/[^/]+\/ranquing/ },
+  { key: 'home', label: ca.nav.home, icon: Home, href: (g) => (g ? `/g/${g}` : '/'), match: /^\/g\/[^/]+(\/sala\/.*)?\/?$|^\/$/ },
+  { key: 'ranking', label: ca.nav.ranking, icon: Trophy, href: (g) => (g ? `/g/${g}/ranquing` : '/'), match: /^\/g\/[^/]+\/(ranquing|visites)|^\/jo\/ranquing/ },
   { key: 'group', label: ca.nav.group, icon: UsersRound, href: (g) => (g ? `/g/${g}/grup` : '/'), match: /^\/g\/[^/]+\/grup|^\/grups\// },
-  { key: 'profile', label: ca.nav.profile, icon: UserRound, href: () => '/jo', match: /^\/jo/ },
+  { key: 'profile', label: ca.nav.profile, icon: UserRound, href: () => '/jo', match: /^\/jo(?!\/ranquing)|^\/perfil\// },
 ]
 
 const navClass =

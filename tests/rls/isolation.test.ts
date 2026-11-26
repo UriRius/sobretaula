@@ -197,6 +197,35 @@ describe('l\'Amic no pot llegir res de «Parella»', () => {
 })
 
 // ---------------------------------------------------------------------------
+// El perfil de l'Ana vist per l'Amic (src/lib/profile.ts). Les mateixes
+// consultes que fa la pantalla, però demanant també Parella a propòsit (com
+// si algú escrivís ?grup=<id de Parella> a l'adreça).
+// ---------------------------------------------------------------------------
+describe('el perfil de l\'Ana, vist per l\'Amic, no diu res de «Parella»', () => {
+  const both = () => [gAmics, gParella]
+
+  it('grups de l\'Ana: només el compartit', async () => {
+    const { data } = await asAmic.from('group_members').select('group_id').eq('user_id', ana)
+    expect((data ?? []).map((m) => m.group_id)).toEqual([gAmics])
+  })
+
+  it('visites, notes i vots de l\'Ana: només d\'Amics', async () => {
+    const visits = await asAmic.from('visits').select('group_id').in('group_id', both())
+    expect(new Set((visits.data ?? []).map((v) => v.group_id))).toEqual(new Set([gAmics]))
+    const stats = await asAmic.from('visit_category_stats').select('group_id').in('group_id', both())
+    expect(new Set((stats.data ?? []).map((s) => s.group_id))).toEqual(new Set([gAmics]))
+    const votes = await asAmic.from('votes').select('group_id, visit_id').eq('user_id', ana).in('group_id', both())
+    expect(new Set((votes.data ?? []).map((v) => v.group_id))).toEqual(new Set([gAmics]))
+    expect((votes.data ?? []).some((v) => v.visit_id === vParella.visitId)).toBe(false)
+  })
+
+  it('comentaris de l\'Ana: només d\'Amics', async () => {
+    const { data } = await asAmic.from('comments').select('group_id').eq('user_id', ana)
+    expect(new Set((data ?? []).map((c) => c.group_id))).toEqual(new Set([gAmics]))
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Escriptura: l'Amic no pot tocar res de Parella
 // ---------------------------------------------------------------------------
 describe('l\'Amic no pot escriure res a «Parella»', () => {

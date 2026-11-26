@@ -38,6 +38,7 @@ npm run db:reset      # torna a aplicar totes les migracions + dades de prova
 npm run db:types      # regenera src/types/database.ts després d'un canvi d'esquema
 npm run test:unit     # lògica pura i contrast de colors
 npm run test:rls      # aïllament entre grups i secret del vot (Supabase local)
+npm run test:e2e      # la sala amb dos mòbils i la privadesa del perfil (Playwright + Chrome)
 npm run typecheck && npm run lint
 npm run icons         # regenera les icones PNG a partir de public/icons/logo.svg
 ```
@@ -95,9 +96,9 @@ Vercel → tornar a Supabase i Google amb l'adreça final → primer administrad
    - Contact email: el teu.
 3. **Branding** («Información de la marca»): a més del nom i el correu, Google
    exige per publicar:
-   - Página principal: `https://sobretaula-app.vercel.app/entrar`
-   - Política de privacidad: `https://sobretaula-app.vercel.app/privacitat`
-   - Dominios autorizados: `sobretaula-app.vercel.app`
+   - Página principal: `https://sobretaula-self.vercel.app/entrar`
+   - Política de privacidad: `https://sobretaula-self.vercel.app/privacitat`
+   - Dominios autorizados: `sobretaula-self.vercel.app`
    - Información de contacto del desarrollador: el teu correu.
    No pugis cap logo (obligaria a verificar l'app). Per això cal haver
    desplegat a Vercel abans de publicar.
@@ -123,8 +124,8 @@ Vercel → tornar a Supabase i Google amb l'adreça final → primer administrad
 1. Puja el repositori a GitHub. Pot ser privat.
 2. A [vercel.com](https://vercel.com) → **Add New → Project** → importa el
    repositori.
-   - **Project Name: `sobretaula`**. El nom del projecte decideix l'adreça:
-     `sobretaula-app.vercel.app`.
+   - **Project Name: `sobretaula`** (Sobretaula viu a `sobretaula-self.vercel.app`). El nom del projecte decideix l'adreça:
+     `sobretaula-self.vercel.app`.
    - Si ja està agafat, Vercel en proposarà una altra. Després la pots canviar
      a **Settings → Domains → Edit** (qualsevol `*.vercel.app` lliure).
 3. **Environment Variables** (abans del primer deploy):
@@ -194,6 +195,18 @@ Amb el CLI de Supabase 3, `db push` sense `--remote` apunta a la base de dades
 Si el codi arriba abans que la migració que necessita, l'app es trenca per a
 tothom fins que es fa el `db push`.
 
+> **Pendent (fases 2–5):** la migració `…_delete_account.sql` (columna
+> `profiles.deleted_at` i funció `delete_my_account`) s'ha d'aplicar a
+> producció **abans** de pujar aquest codi:
+>
+> ```bash
+> npx supabase db push --remote --dry-run   # n'ha de llistar només una
+> npx supabase db push --remote
+> ```
+>
+> Esborrar el compte fa servir `SUPABASE_SECRET_KEY` (ja és a Vercel pel
+> cron): no cal cap variable nova.
+
 - No canviïs mai l'esquema des del panell de Supabase. Tot canvi és una
   migració a `supabase/migrations/`.
 - Per diagnosticar producció: només `SELECT`.
@@ -209,6 +222,17 @@ tothom fins que es fa el `db push`.
   exactament una categoria més.
 - `tests/rls/schema-guard.test.ts`: totes les taules tenen RLS i `anon` no té
   cap permís. A més, vots i comentaris no es publiquen mai per Realtime.
-- `tests/unit/`: contrast WCAG dels colors (clar i fosc), banderes, formats.
+- `tests/rls/delete-account.test.ts`: esborrar el compte deixa el perfil
+  anònim, conserva els vots revelats, esborra els comentaris i cap grup no es
+  queda sense admin.
+- `tests/e2e/room.spec.ts`: dos mòbils voten a la mateixa sala; cap vot de
+  l'altre arriba per la xarxa abans de revelar-se, i cada «Següent» arriba a
+  l'altre mòbil en menys d'1 s. Fa servir les dades de prova i les deixa igual.
+- `tests/e2e/profile.spec.ts`: al perfil de l'Oriol, en Piti (només Amics) no
+  hi veu res de Parella, ni forçant l'adreça.
+- `tests/unit/`: puntuació (mitjanes, ponderació, dispersió, rànquing amb
+  empats, exigència, perfil; canviar un pes reordena el rànquing sense tocar
+  la BD), contrast WCAG dels colors (clar i fosc), banderes, formats i dates.
 
-La CI (`.github/workflows/checks.yml`) ho passa tot a cada PR.
+La CI (`.github/workflows/checks.yml`) ho passa tot a cada PR, l'E2E inclòs
+(Supabase local + Chromium).

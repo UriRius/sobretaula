@@ -55,13 +55,14 @@ export const privacyPolicy: { title: string; intro: string; sections: PrivacySec
     {
       title: 'Quant de temps',
       paragraphs: [
-        'Mentre tinguis el compte. Si surts d\'un grup, els teus vots es queden a l\'historial d\'aquell grup perquè el rànquing no canviï. Si demanes esborrar el compte, esborrem les teves dades d\'accés i el teu perfil passa a ser anònim; els vots es conserven sense el teu nom.',
+        'Mentre tinguis el compte. Si surts d\'un grup, els teus vots es queden a l\'historial d\'aquell grup perquè el rànquing no canviï.',
+        'Si esborres el compte (Perfil → Ajustos → Esborrar el compte), esborrem al moment les teves dades d\'accés (el correu inclòs) i els teus comentaris, i surts de tots els grups. El teu perfil passa a ser anònim («Antic membre») i els vots de les sales ja revelades es conserven sense el teu nom, perquè l\'historial dels grups no canviï. Els vots d\'una sala que encara no s\'havia revelat s\'esborren. Si eres l\'última persona d\'un grup, el grup s\'esborra sencer.',
       ],
     },
     {
       title: 'Els teus drets',
       paragraphs: [
-        `Pots canviar el teu nom i el teu avatar des de l'app. Per accedir a les teves dades, demanar-ne una còpia, corregir-les, oposar-te al seu ús o esborrar el compte, escriu a ${LEGAL.contactEmail} i ho farem en un màxim de 30 dies.`,
+        `Pots canviar el teu nom i el teu avatar, i esborrar el compte, des de l'app. Per accedir a les teves dades, demanar-ne una còpia, corregir-les o oposar-te al seu ús, escriu a ${LEGAL.contactEmail} i ho farem en un màxim de 30 dies.`,
         'Si creus que no les tractem bé, pots reclamar a l\'Agència Espanyola de Protecció de Dades (aepd.es).',
       ],
     },

@@ -103,38 +103,3 @@ export async function getActiveInvites(groupId: string): Promise<Invite[]> {
     .order('created_at', { ascending: false })
   return (data ?? []).filter((i) => i.max_uses === null || i.uses < i.max_uses)
 }
-
-export type RecentVisit = {
-  id: string
-  visitDate: string
-  status: Database['public']['Enums']['visit_status']
-  restaurant: { name: string; city: string | null; cuisineOrigin: string }
-}
-
-export async function getRecentVisits(groupId: string, limit = 8): Promise<RecentVisit[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('visits')
-    .select('id, visit_date, status, restaurants(name, city, cuisine_origin)')
-    .eq('group_id', groupId)
-    .order('visit_date', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(limit)
-  if (error) throw new Error(error.message)
-  return (data ?? []).flatMap((v) =>
-    v.restaurants
-      ? [
-          {
-            id: v.id,
-            visitDate: v.visit_date,
-            status: v.status,
-            restaurant: {
-              name: v.restaurants.name,
-              city: v.restaurants.city,
-              cuisineOrigin: v.restaurants.cuisine_origin,
-            },
-          },
-        ]
-      : [],
-  )
-}

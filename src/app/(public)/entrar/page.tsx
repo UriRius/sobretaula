@@ -37,10 +37,16 @@ async function SignInForm({ searchParams }: Pick<PageProps<'/entrar'>, 'searchPa
   const params = await searchParams
   const next = safeNext(typeof params.next === 'string' ? params.next : null)
   const failed = params.error === 'oauth'
+  const deleted = params.compte === 'esborrat'
 
   return (
     <div className="flex flex-col gap-4">
       {failed && <ErrorText>{ca.auth.oauthFailed}</ErrorText>}
+      {deleted && (
+        <p role="status" className="rounded-xl bg-surface-2 px-3 py-2 text-center text-sm text-label">
+          {ca.account.deleted}
+        </p>
+      )}
       <GoogleButton next={next} />
       <p className="text-center text-sm text-subtle">{ca.auth.subtitle}</p>
 

@@ -54,6 +54,9 @@ const PAIRS: [string, string, number][] = [
   ['primary-soft-fg', 'primary-soft', 4.5],
   ['accent-soft-fg', 'accent-soft', 4.5],
   ['on-accent', 'accent', 4.5],
+  ['card-ink', 'card-face', 4.5],
+  ['success', 'surface', 4.5],
+  ['success', 'canvas', 4.5],
 ]
 
 describe.each([

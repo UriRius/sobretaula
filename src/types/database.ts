@@ -161,14 +161,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_emoji": string | null,"avatar_url": string | null,"created_at": string,"display_name": string,"id": string,"updated_at": string
+                    "avatar_emoji": string | null,"avatar_url": string | null,"created_at": string,"deleted_at": string | null,"display_name": string,"id": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_emoji"?: string | null,"avatar_url"?: string | null,"created_at"?: string,"display_name": string,"id": string,"updated_at"?: string
+                    "avatar_emoji"?: string | null,"avatar_url"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"display_name": string,"id": string,"updated_at"?: string
                   }
                   Update: {
-                    "avatar_emoji"?: string | null,"avatar_url"?: string | null,"created_at"?: string,"display_name"?: string,"id"?: string,"updated_at"?: string
+                    "avatar_emoji"?: string | null,"avatar_url"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"display_name"?: string,"id"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -380,6 +380,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
 "invite_preview":
 { Args: { "p_code": string }; Returns: {
               "group_color": Database["public"]['Enums']["group_color"],"group_emoji": string,"group_id": string,"group_name": string,"is_member": boolean,"member_count": number,"status": string

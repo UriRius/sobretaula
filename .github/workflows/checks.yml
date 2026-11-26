@@ -38,6 +38,19 @@ jobs:
         run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime
       - name: Aïllament entre grups + secret del vot + guarda d'esquema
         run: npm run test:rls
+      - name: Variables de l'app (Supabase local)
+        run: |
+          npx supabase status -o env > .supabase.env
+          . ./.supabase.env
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
+            echo "SUPABASE_SECRET_KEY=$SECRET_KEY"
+          } > .env.local
+      - name: Navegador per a l'E2E
+        run: npx playwright install --with-deps chromium
+      - name: La sala amb dos mòbils (vot secret, sincronització < 1 s)
+        run: npm run test:e2e
       - name: Atura la Supabase
         if: always()
         run: npx supabase stop --no-backup

@@ -87,6 +87,6 @@ function withCookies(target: NextResponse, source: NextResponse) {
 export const config = {
   matcher: [
     // Tot menys els fitxers estàtics, les icones i el manifest.
-    '/((?!_next/static|_next/image|favicon.ico|icon|apple-icon|manifest.webmanifest|icons/|flags/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|icon|apple-icon|manifest.webmanifest|sw\\.js|offline\\.html|icons/|flags/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 }

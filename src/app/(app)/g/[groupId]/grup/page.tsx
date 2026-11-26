@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { updateGroup } from '@/app/actions/groups'
@@ -7,8 +8,11 @@ import { Avatar } from '@/components/Avatar'
 import { GroupForm } from '@/components/GroupForm'
 import { ButtonLink } from '@/components/ui/Button'
 import { Card, SectionTitle, Skeleton } from '@/components/ui/Card'
+import { MIN_VISITS_FOR_EXIGENCY } from '@/config/scoring'
 import { ca } from '@/i18n/ca'
 import { requireUser } from '@/lib/auth'
+import { formatSignedScore } from '@/lib/format'
+import { getGroupExigency } from '@/lib/profile'
 import { getActiveInvites, getGroup } from '@/lib/queries'
 import { InviteManager } from './InviteManager'
 import { LeaveGroupButton, MemberActions } from './MemberActions'
@@ -28,7 +32,8 @@ async function GroupSettings({ params }: Pick<PageProps<'/g/[groupId]/grup'>, 'p
   const [user, group] = await Promise.all([requireUser(), getGroup(groupId)])
   if (!group) notFound()
   const isAdmin = group.role === 'admin'
-  const invites = isAdmin ? await getActiveInvites(groupId) : []
+  const [invites, exigency] = await Promise.all([isAdmin ? getActiveInvites(groupId) : [], getGroupExigency(groupId)])
+  const memberOf = (userId: string) => group.members.find((m) => m.userId === userId)
 
   return (
     <div className="flex flex-col gap-5">
@@ -43,18 +48,23 @@ async function GroupSettings({ params }: Pick<PageProps<'/g/[groupId]/grup'>, 'p
             const isMe = m.userId === user.id
             return (
               <li key={m.userId} className="flex min-h-16 items-center gap-3 px-4 py-2">
-                <Avatar profile={m.profile} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-heading">
-                    {m.profile.display_name}
-                    {isMe && <span className="font-normal text-subtle"> ({ca.common.you})</span>}
-                  </p>
-                  {m.role === 'admin' && (
-                    <span className="mt-0.5 inline-block rounded-full bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-soft-fg">
-                      {ca.group.admin}
-                    </span>
-                  )}
-                </div>
+                <Link
+                  href={`/perfil/${m.userId}?grup=${groupId}`}
+                  className="-my-2 flex min-h-16 min-w-0 flex-1 items-center gap-3 rounded-xl"
+                >
+                  <Avatar profile={m.profile} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-heading">
+                      {m.profile.display_name}
+                      {isMe && <span className="font-normal text-subtle"> ({ca.common.you})</span>}
+                    </p>
+                    {m.role === 'admin' && (
+                      <span className="mt-0.5 inline-block rounded-full bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-soft-fg">
+                        {ca.group.admin}
+                      </span>
+                    )}
+                  </div>
+                </Link>
                 {isAdmin && !isMe && (
                   <MemberActions groupId={groupId} userId={m.userId} name={m.profile.display_name} role={m.role} />
                 )}
@@ -62,6 +72,35 @@ async function GroupSettings({ params }: Pick<PageProps<'/g/[groupId]/grup'>, 'p
             )
           })}
         </ul>
+      </Card>
+
+      <Card flush>
+        <div className="px-4 pt-4">
+          <SectionTitle>{ca.group.exigencyTitle}</SectionTitle>
+          <p className="-mt-2 mb-3 text-sm text-subtle">{ca.group.exigencyHint}</p>
+        </div>
+        <ol className="divide-y divide-line-subtle">
+          {exigency.map((row) => {
+            const member = memberOf(row.userId)
+            if (!member) return null
+            return (
+              <li key={row.userId}>
+                <Link
+                  href={`/perfil/${row.userId}?grup=${groupId}`}
+                  className="flex min-h-14 items-center gap-3 px-4 py-2 hover:bg-surface-2"
+                >
+                  <Avatar profile={member.profile} size="sm" />
+                  <span className="min-w-0 flex-1 truncate text-heading">{member.profile.display_name}</span>
+                  {row.value === null ? (
+                    <span className="text-sm text-subtle">{ca.group.exigencyNeeds(MIN_VISITS_FOR_EXIGENCY)}</span>
+                  ) : (
+                    <span className="tabular font-display text-xl font-semibold text-heading">{formatSignedScore(row.value)}</span>
+                  )}
+                </Link>
+              </li>
+            )
+          })}
+        </ol>
       </Card>
 
       {isAdmin && (

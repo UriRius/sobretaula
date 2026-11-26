@@ -17,6 +17,7 @@
   --surface-2: #f1e7d6;     /* farcits interiors */
   --surface-3: #e8dbc5;     /* premut */
   --card-face: #fffdf8;     /* anvers de les cartes */
+  --card-ink: #2b1a12;      /* text sobre l'anvers (també en fosc: l'anvers és clar) */
 
   /* vores */
   --line-subtle: #eadfcb;
@@ -56,6 +57,9 @@
   --group-pruna: #7d4a7a;
   --group-rosa: #c2567a;
 
+  /* fet / connectat (✓ de qui ha votat) */
+  --success: #3d7559;
+
   --flag-edge: rgb(43 26 18 / 0.2);
   --shadow-card: 0 1px 2px rgb(43 26 18 / 0.08), 0 4px 12px rgb(43 26 18 / 0.06);
   --shadow-raised: 0 2px 4px rgb(43 26 18 / 0.1), 0 12px 28px rgb(43 26 18 / 0.14);
@@ -70,6 +74,7 @@
   --surface-2: #34241f;
   --surface-3: #3f2c26;
   --card-face: #f3e6d4;
+  --card-ink: #2b1a12;
   --line-subtle: #3a2924;
   --line: #4a362f;
   --line-strong: #6b5045;
@@ -98,6 +103,7 @@
   --group-blau: #6e9ccb;
   --group-pruna: #b17dae;
   --group-rosa: #e384a3;
+  --success: #7cc09e;
   --flag-edge: rgb(255 255 255 / 0.22);
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
   --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.45), 0 12px 28px rgb(0 0 0 / 0.4);
@@ -111,6 +117,7 @@
     --surface-2: #34241f;
     --surface-3: #3f2c26;
     --card-face: #f3e6d4;
+    --card-ink: #2b1a12;
     --line-subtle: #3a2924;
     --line: #4a362f;
     --line-strong: #6b5045;
@@ -139,8 +146,9 @@
     --group-blau: #6e9ccb;
     --group-pruna: #b17dae;
     --group-rosa: #e384a3;
+    --success: #7cc09e;
     --flag-edge: rgb(255 255 255 / 0.22);
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.25);
     --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.45), 0 12px 28px rgb(0 0 0 / 0.4);
   }
 }
@@ -151,6 +159,8 @@
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
   --color-card-face: var(--card-face);
+  --color-card-ink: var(--card-ink);
+  --color-success: var(--success);
   --color-line-subtle: var(--line-subtle);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
@@ -203,6 +213,62 @@ body {
     linear-gradient(90deg, color-mix(in oklab, var(--primary) 5%, transparent) 50%, transparent 50%),
     linear-gradient(color-mix(in oklab, var(--primary) 5%, transparent) 50%, transparent 50%);
   background-size: 28px 28px;
+}
+
+/* --------------------------------------------------------------------------
+   Cartes (src/components/PlayingCard.tsx)
+   -------------------------------------------------------------------------- */
+
+/* Revers: quadres vichy, com unes estovalles. */
+.vichy {
+  background-color: var(--card-face);
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--primary) 42%, transparent) 50%, transparent 50%),
+    linear-gradient(color-mix(in oklab, var(--primary) 42%, transparent) 50%, transparent 50%);
+  background-size: 12px 12px;
+}
+
+/* Gir 3D: .card-flip > .card-flip-inner[data-down] > .card-side(.card-side-back) */
+.card-flip {
+  perspective: 700px;
+}
+.card-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.card-flip-inner[data-down='true'] {
+  transform: rotateY(180deg);
+}
+.card-side {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.card-side-back {
+  transform: rotateY(180deg);
+}
+
+/* Triar una carta: salta i es queda aixecada. */
+@keyframes card-pop {
+  0% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-10px) scale(1.07); }
+  100% { transform: translateY(-6px) scale(1); }
+}
+.animate-card-pop {
+  animation: card-pop 0.28s ease-out both;
+}
+
+/* Entrades suaus (revelació, nota final). */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise-in {
+  animation: rise-in 0.45s ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Fraunces, Inter } from 'next/font/google'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { ca } from '@/i18n/ca'
 import './globals.css'
 
@@ -38,7 +39,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <OfflineBanner />
+        {children}
+      </body>
     </html>
   )
 }
