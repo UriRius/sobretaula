@@ -30,7 +30,7 @@ Botons grans, poc text, una mà, pantalles de 375 px.
 | BD / Auth / temps real | Supabase (Postgres, Auth amb Google, Realtime, RLS), regió UE |
 | Allotjament | Vercel (pla gratuït, `*.vercel.app`) |
 | Icones | lucide-react; banderes amb flag-icons (+ senyera pròpia) |
-| Tests | Vitest (unitaris i RLS contra la Supabase local); Playwright (`tests/e2e`: la sala amb dos mòbils i la privadesa del perfil) |
+| Tests | Vitest (unitaris i RLS contra la Supabase local); Playwright (`tests/e2e`: la sala amb dos mòbils, la privadesa del perfil i esborrar del rànquing) |
 | Idioma | Català. Tots els textos a `src/i18n/ca.ts`, mai dins dels components |
 
 Next 16 no és el Next que coneixes: abans de fer servir una API, llegeix la
@@ -105,9 +105,9 @@ només hi miren on el document ho demana (l'amfitrió fa avançar la sala).
 | `group_members` | pertinença i rol | membres | admins (mai la pròpia fila); entrar: `accept_invite`; sortir: `leave_group` |
 | `group_invites` | codi de 10, caducitat, usos | admins | crear: `create_invite`; revocar: DELETE (admins) |
 | `private.allowed_emails` | emails que poden crear grups sense invitació | ningú (no exposada) | SQL manual (README) |
-| `restaurants` | catàleg únic per (nom, població) normalitzats | **només els restaurants on han anat els meus grups** | crear: dins `create_visit`; corregir: qui hi ha anat |
-| `group_restaurant_notes` | notes lliures d'un grup sobre un restaurant | membres | membres |
-| `visits` | sala/visita: data, preu, amfitrió, codi de 5, estat, pas | membres | `create_visit`, `advance_visit`; data i preu: amfitrió o admin; cancel·lar (DELETE) mentre vota |
+| `restaurants` | catàleg únic per (nom, població) normalitzats | **només els restaurants on han anat els meus grups** | crear: dins `create_visit`; corregir: qui hi ha anat; esborrar: el trigger, quan ja no en queda cap visita |
+| `group_restaurant_notes` | notes lliures d'un grup sobre un restaurant | membres | membres; se'n van amb l'última visita del grup al restaurant (trigger) |
+| `visits` | sala/visita: data, preu, amfitrió, codi de 5, estat, pas | membres | `create_visit`, `advance_visit`; data i preu: amfitrió o admin; esborrar (DELETE): amfitrió o admin, en `voting` (cancel·lar) o `closed` (rànquing), mai en `revealing` |
 | `visit_participants` | qui hi és i quantes categories ha votat (`votes_cast`, per trigger) | membres | `join_visit` |
 | `votes` | 1–10 per categoria | **els meus; els dels altres només si la categoria ja s'ha revelat** | `cast_vote` (només en `voting`) |
 | `comments` | un per participant | **el meu; els dels altres quan la sala és tancada** | `set_comment` (només en `voting`) |
@@ -150,10 +150,15 @@ Errors de les RPC: `raise exception '<codi>'` (p. ex. `not_allowed`,
 - Entrar a una sala (`join_visit`) es fa al client en obrir-la, mai en pintar
   la pàgina al servidor: una precàrrega d'un enllaç no t'ha de fer entrar.
 - Tests: `tests/rls/isolation.test.ts` (Amics ↔ Parella, també el perfil),
-  `vote-secrecy.test.ts`, `schema-guard.test.ts`, `delete-account.test.ts`;
-  `tests/e2e/room.spec.ts` (vot secret també a la xarxa, «Següent» < 1 s) i
-  `profile.spec.ts` (al perfil d'un amic no surt res de Parella). Sempre en
-  verd; CI a cada PR.
+  `vote-secrecy.test.ts`, `schema-guard.test.ts`, `delete-account.test.ts`,
+  `delete-visit.test.ts`; `tests/e2e/room.spec.ts` (vot secret també a la
+  xarxa, «Següent» < 1 s), `profile.spec.ts` (al perfil d'un amic no surt res
+  de Parella) i `ranking.spec.ts` (mantenir premut amb tocs de debò). Sempre
+  en verd; CI a cada PR.
+- Esborrar una visita (migració 5): RLS de DELETE de `visits` + trigger
+  `visits_cleanup_after_delete` (SECURITY DEFINER) que treu les notes del grup
+  i el restaurant que ja no té cap visita. Val per a tots els camins:
+  rànquing, cancel·lar una sala, esborrar un grup.
 - Producció: només Google (proveïdor Email desactivat al panell; si estigués
   actiu, algú podria registrar-se amb l'email d'un altre sense confirmar-lo).
   `is_active_user()` exigeix `email_confirmed_at`.
@@ -225,6 +230,12 @@ Errors de les RPC: `raise exception '<codi>'` (p. ex. `not_allowed`,
   franja groga a dalt i a baix. Dels països, només la classe `fi-xx` (la
   imatge): la base `.fi` força `position: relative` per damunt de Tailwind i la
   bandera quedava desplaçada (en fosc es veia una franja buida).
+- Mantenir premut (`useLongPress`): temporitzador de 500 ms per a iOS +
+  `contextmenu` per a Android i el clic dret; `select-none
+  [-webkit-touch-callout:none]` treu la selecció i la vista prèvia de
+  l'enllaç. Els fulls inferiors són `<dialog>` modals (`DeleteVisitSheet`): el
+  vel (`bg-scrim`) només tanca si el toc hi ha començat, perquè el dit que
+  l'ha obert encara és a la pantalla.
 - `<Card flush>` per a llistes de vora a vora: `className="p-0"` no guanya a
   `p-4` (ordre del CSS de Tailwind, no de les classes).
 - Navegació inferior de 4: Inici · Rànquing · Grup · Perfil. La sala va a
@@ -263,7 +274,7 @@ npm run db:reset      # reprodueix TOTES les migracions + seed
 npm run db:types      # regenera src/types/database.ts
 npm run test:unit
 npm run test:rls      # contra la Supabase local (es nega a córrer contra una altra)
-npm run test:e2e      # Playwright: sala amb dos mòbils + privadesa del perfil (Chrome instal·lat)
+npm run test:e2e      # Playwright: sala amb dos mòbils + privadesa del perfil + esborrar del rànquing (Chrome instal·lat)
 npm run dev
 ```
 
@@ -282,6 +293,16 @@ npm run dev
   Des de Git Bash, `MSYS_NO_PATHCONV=1` (si no, `/g/…` es converteix en `G:/…`).
 - L'E2E crea una sala a «Amics» i l'esborra en acabar (les dades del seed
   han de quedar igual: el rànquing local en depèn).
+- **Mai `next build` amb el `next dev` engegat** a la mateixa carpeta: el
+  build reescriu `.next` i el servidor de desenvolupament es queda trencat
+  («Jest worker encountered 2 child process exceptions» a `/g/…`). Atura el
+  dev abans o reengega'l després. (2026-11-28)
+- Un agent que engega `npm run dev` en segon pla a Windows: aturar la tasca
+  NO mata el `node` de Next (queda orfe al port 3000). Cal `taskkill /PID
+  <pare> /T /F`.
+- Tocs de debò a l'E2E (mantenir premut): `Input.dispatchTouchEvent` per CDP.
+  No fa scroll sol (`tap()` sí) i, si toques abans que React hidrati la fila,
+  no passa res: `ranking.spec.ts` espera `__reactProps` a l'element.
 - Si després d'un `db reset` l'autenticació respon 502 i tots els tests fallen a
   crear usuaris: és el contenidor, no el codi → `npx supabase stop && npx
   supabase start`.
@@ -289,9 +310,12 @@ npm run dev
 ## Desplegament
 
 - Producció: projecte `zxuzbtoikksyreqgqkzo` (Supabase, **eu-west-1 Irlanda**),
-  funcions de Vercel a `dub1`. Migracions 1–3 aplicades el 2026-11-23. La 4
-  (`delete_account`, additiva) està pendent de `db push --remote` **abans**
-  de desplegar el codi de les fases 2–5.
+  funcions de Vercel a `dub1`. Migracions 1–3 aplicades el 2026-11-23; la 4
+  (`delete_account`) el 2026-11-26. La 5 (`delete_visits`) està pendent de
+  `db push --remote` **abans** de desplegar el codi d'esborrar del rànquing.
+- Amb un agent, `db push --remote` s'atura demanant confirmació
+  (`HostedMutationConsentRequiredError`): cal `--yes`, i només quan l'Oriol
+  ho ha demanat en aquell missatge.
 - CLI de Supabase 3: les ordres apunten a LOCAL per defecte. Producció =
   `--remote` (`db push --remote [--dry-run]`, `migration list --remote`).
   Per diagnosticar, `db query --remote --read-only`; ATENCIÓ: amb el rol de
@@ -333,6 +357,9 @@ npm run dev
 | 2026-11-26 | Nota final: també la nota de cadascú i els comentaris | A taula és el moment de comentar-ho | Només la nota del grup |
 | 2026-11-26 | Rànquing: mes en curs per defecte; pestanya/mes amb `replace` | Enrere des del rànquing no ha de recórrer cada mes visitat | `push` de cada canvi |
 | 2026-11-26 | Esborrar el compte: comentaris fora, vots revelats es queden; vots d'una sala que encara vota, fora | El text lliure pot identificar; els números sostenen el rànquing; un vot no revelat no ha comptat mai | Conservar-ho tot / esborrar-ho tot |
+| 2026-11-28 | Esborrar una visita tancada mantenint premuda la fila del rànquing (també clic dret); full de confirmació, no `confirm()` | Visites de prova que no es podien treure; a taula, una mà | Botó a cada fila; només des del detall |
+| 2026-11-28 | Qui esborra una visita tancada: l'amfitrió o un admin, com qui la fa avançar | Mateixa regla que la resta de la sala | Només admins |
+| 2026-11-28 | El restaurant sense cap visita s'esborra del catàleg (trigger, també els orfes d'abans) | Ningú no el veia, i `create_visit` el reaprofitaria amb la cuina i l'adreça velles | Deixar-lo |
 | 2026-11-26 | Confirmació d'esborrar el compte escrivint «esborrar» | És irreversible i el botó és a prop de «Tanca la sessió» | Només `confirm()` |
 | 2026-11-26 | Sense connexió: `experimental.useOffline` + service worker que NOMÉS serveix `offline.html` | Res de memòria cau de dades: una sala vella a la memòria cau enganyaria | Cache de pàgines (PWA «offline-first») |
 | 2026-11-23 | Els vots sobreviuen a sortir del grup / esborrar el compte | La història del grup no ha de canviar | Esborrar en cascada |

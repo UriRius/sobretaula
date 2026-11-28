@@ -49,6 +49,22 @@ export async function createVisit(groupId: string, _prev: ActionState, formData:
   redirect(`/s/${data.room_code}`)
 }
 
+/**
+ * Esborrar una visita (des del rànquing, mantenint-la premuda). Decideix la
+ * RLS: l'amfitrió o un admin, i mai mentre es revela. Si no hi té dret, el
+ * DELETE no esborra res (sense error): per això es demana la fila esborrada.
+ * La neteja (notes del grup, restaurant orfe) la fa un trigger a la BD.
+ */
+export async function deleteVisit(visitId: string): Promise<ActionState> {
+  if (!UUID.test(visitId)) return { error: ca.errors.room_not_found }
+  const supabase = await createClient()
+  const { data, error } = await supabase.from('visits').delete().eq('id', visitId).select('id')
+  if (error) return { error: errorMessage(error) }
+  if (!data?.length) return { error: ca.errors.cannot_delete_visit }
+  refresh()
+  return { error: null, ok: true }
+}
+
 /** Notes del grup sobre un restaurant (qualsevol membre). */
 export async function saveRestaurantNotes(
   groupId: string,

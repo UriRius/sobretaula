@@ -6,6 +6,7 @@ import { Suspense } from 'react'
 import { RankingList } from '@/components/RankingList'
 import { Card, PageTitle, Skeleton } from '@/components/ui/Card'
 import { ca } from '@/i18n/ca'
+import { requireUser } from '@/lib/auth'
 import { currentMonth, isMonth, isYear, shiftMonth } from '@/lib/dates'
 import { formatMonth } from '@/lib/format'
 import { getGroup } from '@/lib/queries'
@@ -40,7 +41,7 @@ export default function RankingPage({ params, searchParams }: PageProps<'/g/[gro
 }
 
 async function Ranking({ params, searchParams }: PageProps<'/g/[groupId]/ranquing'>) {
-  const [{ groupId }, query] = await Promise.all([params, searchParams])
+  const [{ groupId }, query, user] = await Promise.all([params, searchParams, requireUser()])
   const group = await getGroup(groupId)
   if (!group) notFound()
 
@@ -52,6 +53,9 @@ async function Ranking({ params, searchParams }: PageProps<'/g/[groupId]/ranquin
 
   const visits = await getScoredVisits([groupId])
   const ranked = rankPeriod(visits, period)
+  // Esborrar (mantenint premut): l'amfitrió o un admin. La RLS ho torna a mirar.
+  const canDelete = (hostId: string) => group.role === 'admin' || hostId === user.id
+  const someDeletable = ranked.some(({ item }) => canDelete(item.hostId))
 
   const base = `/g/${groupId}/ranquing`
   const hrefFor = (v: View, value?: string) =>
@@ -104,7 +108,7 @@ async function Ranking({ params, searchParams }: PageProps<'/g/[groupId]/ranquin
         ) : (
           <RankingList
             rows={ranked.map(({ item, score, position }) => ({
-              key: item.id,
+              visitId: item.id,
               href: `/g/${groupId}/visites/${item.id}`,
               position,
               score,
@@ -112,11 +116,17 @@ async function Ranking({ params, searchParams }: PageProps<'/g/[groupId]/ranquin
               cuisineOrigin: item.restaurant.cuisineOrigin,
               visitDate: item.visitDate,
               city: item.restaurant.city,
+              deletable: canDelete(item.hostId),
             }))}
           />
         )}
       </Card>
-      {ranked.length > 0 && <p className="text-center text-sm text-subtle">{ca.ranking.visits(ranked.length)}</p>}
+      {ranked.length > 0 && (
+        <div className="text-center text-sm text-subtle">
+          <p>{ca.ranking.visits(ranked.length)}</p>
+          {someDeletable && <p className="mt-1 text-xs">{ca.ranking.longPressHint}</p>}
+        </div>
+      )}
     </div>
   )
 }

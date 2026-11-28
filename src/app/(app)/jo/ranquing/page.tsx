@@ -36,33 +36,42 @@ async function MyRanking() {
     newestFirst,
   )
 
+  // Esborrar (mantenint premut): l'amfitrió o un admin d'aquell grup. La RLS ho torna a mirar.
+  const canDelete = (groupId: string, hostId: string) =>
+    hostId === user.id || groups.some((g) => g.id === groupId && g.role === 'admin')
+  const someDeletable = ranked.some(({ item }) => canDelete(item.groupId, item.hostId))
+
   return (
-    <Card flush>
-      {ranked.length === 0 ? (
-        <p className="px-4 py-8 text-center text-subtle">{ca.myRanking.empty}</p>
-      ) : (
-        <RankingList
-          rows={ranked.map(({ item, score, position }) => {
-            const group = groups.find((g) => g.id === item.groupId)
-            return {
-              key: item.id,
-              href: `/g/${item.groupId}/visites/${item.id}`,
-              position,
-              score,
-              name: item.restaurant.name,
-              cuisineOrigin: item.restaurant.cuisineOrigin,
-              visitDate: item.visitDate,
-              city: item.restaurant.city,
-              extra: group ? (
-                <span className="flex shrink-0 items-center gap-1" title={group.name}>
-                  <GroupBadge emoji={group.emoji} color={group.color} size={18} />
-                  <span className="sr-only">{group.name}</span>
-                </span>
-              ) : null,
-            }
-          })}
-        />
-      )}
-    </Card>
+    <>
+      <Card flush>
+        {ranked.length === 0 ? (
+          <p className="px-4 py-8 text-center text-subtle">{ca.myRanking.empty}</p>
+        ) : (
+          <RankingList
+            rows={ranked.map(({ item, score, position }) => {
+              const group = groups.find((g) => g.id === item.groupId)
+              return {
+                visitId: item.id,
+                href: `/g/${item.groupId}/visites/${item.id}`,
+                position,
+                score,
+                name: item.restaurant.name,
+                cuisineOrigin: item.restaurant.cuisineOrigin,
+                visitDate: item.visitDate,
+                city: item.restaurant.city,
+                deletable: canDelete(item.groupId, item.hostId),
+                extra: group ? (
+                  <span className="flex shrink-0 items-center gap-1" title={group.name}>
+                    <GroupBadge emoji={group.emoji} color={group.color} size={18} />
+                    <span className="sr-only">{group.name}</span>
+                  </span>
+                ) : null,
+              }
+            })}
+          />
+        )}
+      </Card>
+      {someDeletable && <p className="mt-4 text-center text-xs text-subtle">{ca.ranking.longPressHint}</p>}
+    </>
   )
 }

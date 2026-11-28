@@ -195,17 +195,8 @@ Amb el CLI de Supabase 3, `db push` sense `--remote` apunta a la base de dades
 Si el codi arriba abans que la migració que necessita, l'app es trenca per a
 tothom fins que es fa el `db push`.
 
-> **Pendent (fases 2–5):** la migració `…_delete_account.sql` (columna
-> `profiles.deleted_at` i funció `delete_my_account`) s'ha d'aplicar a
-> producció **abans** de pujar aquest codi:
->
-> ```bash
-> npx supabase db push --remote --dry-run   # n'ha de llistar només una
-> npx supabase db push --remote
-> ```
->
-> Esborrar el compte fa servir `SUPABASE_SECRET_KEY` (ja és a Vercel pel
-> cron): no cal cap variable nova.
+Esborrar el compte fa servir `SUPABASE_SECRET_KEY` (la mateixa que el cron):
+no cal cap variable nova a Vercel.
 
 - No canviïs mai l'esquema des del panell de Supabase. Tot canvi és una
   migració a `supabase/migrations/`.

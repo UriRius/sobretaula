@@ -56,6 +56,7 @@ export const privacyPolicy: { title: string; intro: string; sections: PrivacySec
       title: 'Quant de temps',
       paragraphs: [
         'Mentre tinguis el compte. Si surts d\'un grup, els teus vots es queden a l\'historial d\'aquell grup perquè el rànquing no canviï.',
+        'L\'amfitrió d\'una visita o un admin del grup la poden esborrar (per exemple, una de prova): llavors s\'esborren al moment tots els vots i comentaris d\'aquella visita, i el restaurant, si cap grup més no hi ha anat.',
         'Si esborres el compte (Perfil → Ajustos → Esborrar el compte), esborrem al moment les teves dades d\'accés (el correu inclòs) i els teus comentaris, i surts de tots els grups. El teu perfil passa a ser anònim («Antic membre») i els vots de les sales ja revelades es conserven sense el teu nom, perquè l\'historial dels grups no canviï. Els vots d\'una sala que encara no s\'havia revelat s\'esborren. Si eres l\'última persona d\'un grup, el grup s\'esborra sencer.',
       ],
     },
